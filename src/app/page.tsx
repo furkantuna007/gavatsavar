@@ -1,45 +1,42 @@
 "use client";
-export const dynamic = "force-dynamic";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 
-import { useSearchParams, useRouter } from "next/navigation";
-import { results } from "../../../results";
-import { Suspense } from "react";
-
-function ResultContent() {
-  const searchParams = useSearchParams();
+export default function Home() {
+  const [selectedType, setSelectedType] = useState<string | null>(null);
   const router = useRouter();
-  const score = Number(searchParams.get("score"));
-  const type = searchParams.get("type");
 
-  if (!type || isNaN(score)) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-fuchsia-500 to-violet-600">
-        <div className="bg-white/90 shadow-xl rounded-2xl p-8 max-w-xl w-full flex flex-col items-center">
-          <h2 className="text-xl font-bold mb-2">Hatalı Sonuç</h2>
-          <p className="mb-4">Lütfen testi baştan başlatın.</p>
-          <button className="bg-black text-white rounded-xl p-3 font-bold" onClick={() => router.push("/")}>Ana Sayfa</button>
-        </div>
-      </div>
-    );
+  function handleContinue() {
+    if (selectedType) {
+      router.push(`/spectrum?type=${selectedType}`);
+    }
   }
 
-  const result = results.find(r => score >= r.min && score <= r.max);
-
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-fuchsia-500 to-violet-600">
-      <div className="bg-white/90 shadow-xl rounded-2xl p-8 max-w-xl w-full flex flex-col items-center">
-        <h2 className="text-3xl font-extrabold mb-4 text-center text-black">{result?.title || "Sonuç Bulunamadı"}</h2>
-        <div className="text-lg text-black whitespace-pre-line mb-8 text-center">{result?.desc || "Beklenmeyen bir hata oluştu."}</div>
-        <button className="bg-black text-white rounded-xl p-3 font-bold" onClick={() => router.push("/")}>Tekrar Dene</button>
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-fuchsia-500 to-violet-600">
+      <div className="bg-white/90 shadow-xl rounded-2xl p-8 max-w-md w-full flex flex-col items-center">
+        <div className="flex flex-col gap-4 w-full mb-8">
+          <button
+            className={`w-full rounded-xl p-4 font-bold border-2 transition text-black ${selectedType === "sert" ? "bg-violet-500 border-violet-700" : "bg-white border-gray-300 hover:bg-violet-100"}`}
+            onClick={() => setSelectedType("sert")}
+          >
+            Jargon severim
+          </button>
+          <button
+            className={`w-full rounded-xl p-4 font-bold border-2 transition text-black ${selectedType === "soft" ? "bg-violet-500 border-violet-700" : "bg-white border-gray-300 hover:bg-violet-100"}`}
+            onClick={() => setSelectedType("soft")}
+          >
+            Küfürün hiçbir türünden hoşlanmam
+          </button>
+        </div>
+        <button
+          className={`w-full bg-black text-white rounded-xl p-4 font-bold mt-2 transition ${!selectedType ? "opacity-50 cursor-not-allowed" : "hover:scale-105"}`}
+          disabled={!selectedType}
+          onClick={handleContinue}
+        >
+          Submit
+        </button>
       </div>
     </div>
-  );
-}
-
-export default function Result() {
-  return (
-    <Suspense>
-      <ResultContent />
-    </Suspense>
   );
 }

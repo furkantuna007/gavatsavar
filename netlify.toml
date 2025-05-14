@@ -2,8 +2,11 @@
   command = "npm run build"
   publish = ".next"
 
+[functions]
+  directory = ".netlify/functions"
+
 [dev]
   command = "npm run dev"
 
-[functions]
-  directory = "netlify/functions"
+[[plugins]]
+  package = "@netlify/plugin-nextjs"

@@ -1,6 +1,6 @@
 "use client";
 import { useSearchParams, useRouter } from "next/navigation";
-import { results } from "../../../results";
+import { results } from "../../results";
 import { Suspense } from "react";
 
 export const dynamic = "force-dynamic";

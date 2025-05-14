@@ -32,8 +32,8 @@ export default function Spectrum() {
     type === "sert"
       ? "% KAÇ GAVATSIN?"
       : "İlişkide Ne Kadar Kıskanç / Korumacısın?";
-  const leftLabel = type === "sert" ? "Dağ Ayısı / Mağara Adamı" : "Maço";
-  const rightLabel = type === "sert" ? "Godoş / Gavat" : "Entellektüel";
+  const leftLabel = type === "sert" ? "Mağara Adamı" : "Maço";
+  const rightLabel = type === "sert" ? "Gavat" : "Entellektüel";
 
   if (!started) {
     return (
