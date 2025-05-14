@@ -1,37 +1,45 @@
 "use client";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+export const dynamic = "force-dynamic";
 
-export default function Home() {
-  const [choice, setChoice] = useState<"sert" | "soft" | null>(null);
+import { useSearchParams, useRouter } from "next/navigation";
+import { results } from "../../../results";
+import { Suspense } from "react";
+
+function ResultContent() {
+  const searchParams = useSearchParams();
   const router = useRouter();
-  return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-fuchsia-500 to-violet-600">
-      <div className="bg-white/90 shadow-xl rounded-2xl p-8 max-w-xl w-full flex flex-col items-center">
-        <div className="flex flex-col sm:flex-row gap-4 w-full mb-6">
-          <button
-            className={`flex-1 bg-black text-white rounded-xl p-3 hover:scale-105 transition font-bold border-2 ${choice === "sert" ? "border-purple-500" : "border-transparent"}`}
-            onClick={() => setChoice("sert")}
-          >
-            Sert jargon severim
-          </button>
-          <button
-            className={`flex-1 bg-black text-white rounded-xl p-3 hover:scale-105 transition font-bold border-2 ${choice === "soft" ? "border-purple-500" : "border-transparent"}`}
-            onClick={() => setChoice("soft")}
-          >
-            Küfürün hiçbir türünden hoşlanmam
-          </button>
+  const score = Number(searchParams.get("score"));
+  const type = searchParams.get("type");
+
+  if (!type || isNaN(score)) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-fuchsia-500 to-violet-600">
+        <div className="bg-white/90 shadow-xl rounded-2xl p-8 max-w-xl w-full flex flex-col items-center">
+          <h2 className="text-xl font-bold mb-2">Hatalı Sonuç</h2>
+          <p className="mb-4">Lütfen testi baştan başlatın.</p>
+          <button className="bg-black text-white rounded-xl p-3 font-bold" onClick={() => router.push("/")}>Ana Sayfa</button>
         </div>
-        <button
-          className={`w-full ${choice ? "bg-purple-700" : "bg-black"} text-white rounded-xl p-3 font-bold mt-2 transition ${!choice ? "opacity-50 cursor-not-allowed" : "hover:scale-105"}`}
-          disabled={!choice}
-          onClick={() => {
-            if (choice) router.push(`/spectrum?type=${choice}`);
-          }}
-        >
-          Devam Et
-        </button>
+      </div>
+    );
+  }
+
+  const result = results.find(r => score >= r.min && score <= r.max);
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-fuchsia-500 to-violet-600">
+      <div className="bg-white/90 shadow-xl rounded-2xl p-8 max-w-xl w-full flex flex-col items-center">
+        <h2 className="text-3xl font-extrabold mb-4 text-center text-black">{result?.title || "Sonuç Bulunamadı"}</h2>
+        <div className="text-lg text-black whitespace-pre-line mb-8 text-center">{result?.desc || "Beklenmeyen bir hata oluştu."}</div>
+        <button className="bg-black text-white rounded-xl p-3 font-bold" onClick={() => router.push("/")}>Tekrar Dene</button>
       </div>
     </div>
+  );
+}
+
+export default function Result() {
+  return (
+    <Suspense>
+      <ResultContent />
+    </Suspense>
   );
 }
