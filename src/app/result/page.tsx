@@ -1,8 +1,19 @@
 "use client";
 import { useSearchParams, useRouter } from "next/navigation";
 import { results } from "../../../results";
+import { Suspense } from "react";
+
+export const dynamic = "force-dynamic";
 
 export default function Result() {
+  return (
+    <Suspense>
+      <ResultContent />
+    </Suspense>
+  );
+}
+
+function ResultContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const score = Number(searchParams.get("score"));
@@ -20,19 +31,7 @@ export default function Result() {
     );
   }
 
-  if (type === "soft") {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-fuchsia-500 to-violet-600">
-        <div className="bg-white/90 shadow-xl rounded-2xl p-8 max-w-xl w-full flex flex-col items-center">
-          <h2 className="text-2xl font-extrabold mb-4 text-center">Soft Quiz Sonucu</h2>
-          <p className="mb-4">Bu yol için sonuçlar çok yakında eklenecek.</p>
-          <button className="bg-black text-white rounded-xl p-3 font-bold" onClick={() => router.push("/")}>Ana Sayfa</button>
-        </div>
-      </div>
-    );
-  }
-
-  // Sert yol için sonuç kategorisini bul
+  // Hem 'sert' hem 'soft' için aynı sonuç kategorisini bul
   const result = results.find(r => score >= r.min && score <= r.max);
 
   return (

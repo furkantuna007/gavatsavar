@@ -3,6 +3,8 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { useState } from "react";
 import { quizData } from '../../../quiz-data';
 
+export const dynamic = "force-dynamic";
+
 export default function Spectrum() {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -55,34 +57,21 @@ export default function Spectrum() {
   }
 
   // Quiz akışı
-  if (type === "soft") {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-fuchsia-500 to-violet-600">
-        <div className="bg-white/90 shadow-xl rounded-2xl p-8 max-w-xl w-full flex flex-col items-center">
-          <h2 className="text-2xl font-extrabold mb-4 text-center">Soft Quiz Yakında</h2>
-          <p className="mb-4">Bu yol için içerik çok yakında eklenecek.</p>
-          <button className="bg-black text-white rounded-xl p-3 font-bold" onClick={() => router.push("/")}>Ana Sayfa</button>
-        </div>
-      </div>
-    );
-  }
-
-  // Sert quiz akışı
+  // Hem 'sert' hem 'soft' için aynı quiz akışı
   const question = quizData[current];
   const isLast = current === quizData.length - 1;
-
   function handleNext() {
     if (selected === null) return;
     const nextAnswers = [...answers, selected];
     setAnswers(nextAnswers);
-    setSelected(null);
     if (isLast) {
       // Skor hesapla: A=10, B=5, C=2, D=0
       const scoreTable = [10, 5, 2, 0];
       const score = nextAnswers.reduce((acc, v) => acc + scoreTable[v], 0);
-      router.push(`/result?score=${score}&type=sert`);
+      router.push(`/result?score=${score}&type=${type}`);
     } else {
       setCurrent(current + 1);
+      setSelected(null);
     }
   }
 
